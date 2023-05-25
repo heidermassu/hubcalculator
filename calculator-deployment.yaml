@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: calculator-app
+  namespace: applications
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: calculator-app
+  template:
+    metadata:
+      labels:
+        app: calculator-app
+    spec:
+      containers:
+      - name: calculator-app
+        image: calculator-app
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: "calculator-app"
+  namespace: applications
+spec:
+  template:
+    spec:
+      containers:
+        - image: "heiderhengstmann/javaapps:calculator-V1.0"
+          ports:
+            - containerPort: 8181
