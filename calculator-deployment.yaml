@@ -1,30 +1,29 @@
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: v1
+kind: Pod
 metadata:
   name: calculator-app
-  namespace: applications
+  labels:
+    app.kubernetes.io/name: calculator
 spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: calculator-app
-  template:
-    metadata:
-      labels:
-        app: calculator-app
-    spec:
-      containers:
-      - name: calculator-app
-        image: calculator-app
-apiVersion: serving.knative.dev/v1
+  containers:
+  - name: calculator-app
+    image: heiderhengstmann/javaapps:calculator-v1.1
+    ports:
+    - containerPort: 9376
+
+---
+apiVersion: v1
 kind: Service
 metadata:
-  name: "calculator-app"
-  namespace: applications
+  name: calculator-service
 spec:
-  template:
-    spec:
-      containers:
-        - image: "heiderhengstmann/javaapps:calculator-V1.0"
-          ports:
-            - containerPort: 8181
+  type: LoadBalancer
+  selector:
+    app.kubernetes.io/name: calculator
+  ports:
+  - name: calculator-service-port
+    protocol: TCP
+    ports: 
+    - protocol: TCP
+      port: 9376
+      targetPort: 9376
